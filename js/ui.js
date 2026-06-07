@@ -25,7 +25,7 @@ export class UI {
     this.populateSelectors();
     
     // 2. Navigation / Tab Router
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
       link.addEventListener('click', (e) => {
         e.preventDefault();
         const tabId = link.getAttribute('data-tab');
@@ -56,7 +56,7 @@ export class UI {
     this.currentTab = tabId;
     
     // Update active nav links (sidebar & mobile-bar)
-    document.querySelectorAll('.nav-link').forEach(link => {
+    document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
       if (link.getAttribute('data-tab') === tabId) {
         link.classList.add('active');
       } else {
