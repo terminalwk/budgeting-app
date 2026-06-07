@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  
+  <title>TerminalBudget - Premium Personal Budget PWA</title>
+  <meta name="description" content="Manage your money offline with premium aesthetics, custom cash flow insights, budgets, recurring bills, and multi-device support.">
+  
+  <!-- iOS PWA Shell Configuration -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="TerminalBudget">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  
+  <!-- Web App Manifest for PWA capabilities -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#09090b">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <!-- DESKTOP SIDEBAR NAVIGATION -->
+    <aside class="sidebar">
+      <div class="brand-section">
+        <div class="brand-logo">▲</div>
+        <span class="brand-name">My Budget</span>
+      </div>
+      
+      <nav style="flex:1;">
+        <ul class="nav-menu">
+          <li>
+            <a href="#" class="nav-link active" data-tab="dashboard">
+              <span class="nav-icon">📊</span>
+              <span>Dashboard</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-tab="accounts">
+              <span class="nav-icon">💳</span>
+              <span>Accounts</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-tab="transactions">
+              <span class="nav-icon">💸</span>
+              <span>Transactions</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-tab="budgets">
+              <span class="nav-icon">🎯</span>
+              <span>Budgets</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-tab="recurring">
+              <span class="nav-icon">🔁</span>
+              <span>Recurring</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="nav-link" data-tab="settings">
+              <span class="nav-icon">⚙️</span>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="sidebar-footer">
+        <p>TerminalBudget v1.0</p>
+        <p>100% Private & Offline</p>
+      </div>
+    </aside>
+
+    <!-- MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="mobile-nav-bar">
+      <ul class="mobile-nav-menu">
+        <li>
+          <a href="#" class="mobile-nav-link active" data-tab="dashboard">
+            <span class="nav-icon">📊</span>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="mobile-nav-link" data-tab="accounts">
+            <span class="nav-icon">💳</span>
+            <span>Accounts</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="mobile-nav-link" data-tab="transactions">
+            <span class="nav-icon">💸</span>
+            <span>History</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="mobile-nav-link" data-tab="budgets">
+            <span class="nav-icon">🎯</span>
+            <span>Budgets</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="mobile-nav-link" data-tab="recurring">
+            <span class="nav-icon">🔁</span>
+            <span>Bills</span>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="mobile-nav-link" data-tab="settings">
+            <span class="nav-icon">⚙️</span>
+            <span>Setup</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- MAIN APP CONTENT SHELL -->
+    <main class="main-content">
+      
+      <header class="app-header">
+        <div>
+          <h1 id="active-header-title">Dashboard</h1>
+        </div>
+        
+        <div class="header-actions">
+          <!-- Quick Add Transaction Action -->
+          <button class="btn-primary" id="btn-add-tx">
+            <span>➕</span> Add Transaction
+          </button>
+        </div>
+      </header>
+
+      <!-- GLOBAL SUMMARY CARD LAYER -->
+      <section class="summary-grid" style="margin-bottom:30px;">
+        <div class="glass-card summary-card">
+          <div class="summary-icon-box icon-networth">💎</div>
+          <div class="summary-details">
+            <span class="summary-label">Net Worth</span>
+            <span class="summary-value" id="global-net-worth">$0.00</span>
+          </div>
+        </div>
+        <div class="glass-card summary-card">
+          <div class="summary-icon-box icon-income">📈</div>
+          <div class="summary-details">
+            <span class="summary-label">Income (Month)</span>
+            <span class="summary-value" id="global-monthly-income">$0.00</span>
+          </div>
+        </div>
+        <div class="glass-card summary-card">
+          <div class="summary-icon-box icon-expense">📉</div>
+          <div class="summary-details">
+            <span class="summary-label">Expenses (Month)</span>
+            <span class="summary-value" id="global-monthly-expense">$0.00</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- --- 1. DASHBOARD VIEW --- -->
+      <section id="view-dashboard" class="view-section active">
+        <div class="dashboard-main-grid">
+          
+          <div style="display:flex; flex-direction:column; gap:24px;">
+            <div class="glass-card chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Net Worth Trend (30 Days)</h3>
+              </div>
+              <div class="chart-container" id="dashboard-cashflow-chart">
+                <!-- SVG Area Chart mounts here -->
+              </div>
+            </div>
+            
+            <div class="glass-card chart-card">
+              <div class="chart-header">
+                <h3 class="chart-title">Monthly Expenditure Breakdown</h3>
+              </div>
+              <div id="dashboard-donut-chart">
+                <!-- SVG Donut Chart mounts here -->
+              </div>
+            </div>
+          </div>
+
+          <div class="glass-card recent-activity-card">
+            <h3 class="chart-title">Recent Activity</h3>
+            <div id="dashboard-recent-activity">
+              <!-- Recent 5 transactions render here -->
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      <!-- --- 2. ACCOUNTS VIEW --- -->
+      <section id="view-accounts" class="view-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 20px; font-weight: 700;">Your Accounts</h2>
+          <button class="btn-primary" id="btn-add-account">➕ Add Account</button>
+        </div>
+        <div class="accounts-grid" id="accounts-grid">
+          <!-- Accounts cards render here -->
+        </div>
+      </section>
+
+      <!-- --- 3. TRANSACTIONS VIEW --- -->
+      <section id="view-transactions" class="view-section">
+        <div class="glass-card filters-panel">
+          <div class="filter-group">
+            <label for="filter-search">Search</label>
+            <input type="text" id="filter-search" class="form-control" placeholder="Search description...">
+          </div>
+          <div class="filter-group">
+            <label for="filter-type">Type</label>
+            <select id="filter-type" class="form-control">
+              <option value="all">All Types</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+              <option value="transfer">Transfer</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-category">Category</label>
+            <select id="filter-category" class="form-control">
+              <!-- Category options load here dynamically -->
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-account">Account</label>
+            <select id="filter-account" class="form-control">
+              <!-- Account options load here dynamically -->
+            </select>
+          </div>
+          <div class="filter-group">
+            <label for="filter-date">Date Range</label>
+            <select id="filter-date" class="form-control">
+              <option value="all">All Time</option>
+              <option value="today">Today</option>
+              <option value="week">Past 7 Days</option>
+              <option value="month">Past 30 Days</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="glass-card table-responsive" style="padding:0;">
+          <table class="transactions-table">
+            <thead>
+              <tr>
+                <th style="width: 15%;">Date</th>
+                <th style="width: 25%;">Description</th>
+                <th style="width: 12%;">Type</th>
+                <th style="width: 18%;">Account</th>
+                <th style="width: 15%;">Category</th>
+                <th style="width: 15%; text-align: right;">Amount</th>
+                <th style="width: 10%; text-align: center;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="transactions-table-body">
+              <!-- Transactions load here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- --- 4. BUDGETS VIEW --- -->
+      <section id="view-budgets" class="view-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 20px; font-weight: 700;">Monthly Budgets</h2>
+          <button class="btn-primary" id="btn-add-category">➕ Configure Category</button>
+        </div>
+        <div class="budgets-grid" id="budgets-grid">
+          <!-- Budget target limits render here -->
+        </div>
+      </section>
+
+      <!-- --- 5. RECURRING VIEW --- -->
+      <section id="view-recurring" class="view-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <h2 style="font-size: 20px; font-weight: 700;">Recurring Bills & Subscriptions</h2>
+          <button class="btn-primary" id="btn-add-recurring">➕ Add Recurring</button>
+        </div>
+        <div class="recurring-grid" id="recurring-grid">
+          <!-- Recurring cards load here -->
+        </div>
+      </section>
+
+      <!-- --- 6. SETTINGS VIEW --- -->
+      <section id="view-settings" class="view-section">
+        
+        <div class="glass-card settings-section-card">
+          <h3 class="settings-section-title">General Settings</h3>
+          <div class="settings-grid">
+            <div class="settings-control-group">
+              <label for="setting-currency">Base Currency</label>
+              <select id="setting-currency" class="form-control">
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+                <option value="GBP">GBP (£)</option>
+                <option value="JPY">JPY (¥)</option>
+                <option value="CAD">CAD (CA$)</option>
+                <option value="AUD">AUD (A$)</option>
+                <option value="MYR">MYR (RM)</option>
+              </select>
+            </div>
+            
+            <div class="settings-control-group">
+              <label for="setting-theme">App Theme</label>
+              <select id="setting-theme" class="form-control">
+                <option value="dark">Deep Space Dark</option>
+                <option value="light">Classic Light</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="glass-card settings-section-card">
+          <h3 class="settings-section-title">Manage Categories</h3>
+          <div class="categories-settings-manager" id="settings-categories-list">
+            <!-- Dynamic rows of categories, edit, delete -->
+          </div>
+        </div>
+
+        <div class="glass-card settings-section-card">
+          <h3 class="settings-section-title">Data Management (Local Storage)</h3>
+          <p style="color: var(--text-secondary); font-size: 14px; line-height: 1.5;">
+            All transactions and account details are safely saved on your current device browser. 
+            To sync, back up, or restore records onto another device, execute the actions below:
+          </p>
+          <div class="settings-db-buttons">
+            <button class="btn-secondary" id="btn-export-db">📤 Export Backup File (JSON)</button>
+            <button class="btn-secondary" id="btn-import-db">📥 Restore Database File</button>
+            <input type="file" id="import-file-input" accept=".json" style="display: none;">
+            <button class="btn-secondary btn-danger-action" id="btn-clear-db" style="margin-left: auto;">⚠️ Re-initialize Storage</button>
+          </div>
+        </div>
+
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= MODALS OVERLAYS ================= -->
+
+  <!-- 1. ACCOUNT MODAL -->
+  <div class="modal-overlay" id="modal-account">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-account-title">Add Account</h2>
+        <button class="modal-close-btn" data-close-modal>✕</button>
+      </div>
+      <form class="modal-form" id="form-account">
+        <div class="form-field">
+          <label for="acc-name">Account Name</label>
+          <input type="text" id="acc-name" class="form-control" placeholder="e.g. Chase Checking" required>
+        </div>
+        <div class="form-field">
+          <label for="acc-type">Account Type</label>
+          <select id="acc-type" class="form-control">
+            <option value="checking">🏦 Checking</option>
+            <option value="savings">🐷 Savings</option>
+            <option value="credit">💳 Credit Card</option>
+            <option value="cash">💵 Cash & Wallet</option>
+          </select>
+        </div>
+        <div class="form-field">
+          <label for="acc-balance">Starting Balance</label>
+          <input type="number" id="acc-balance" class="form-control" step="0.01" placeholder="0.00" required>
+        </div>
+        <div class="form-field">
+          <label for="acc-color">Card Color Theme</label>
+          <input type="color" id="acc-color" class="form-control" style="height: 44px; padding: 4px; cursor: pointer;" value="#6366f1">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn-primary">Save Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. CATEGORY MODAL -->
+  <div class="modal-overlay" id="modal-category">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-category-title">Configure Category</h2>
+        <button class="modal-close-btn" data-close-modal>✕</button>
+      </div>
+      <form class="modal-form" id="form-category">
+        <div class="form-field">
+          <label for="cat-name">Category Name</label>
+          <input type="text" id="cat-name" class="form-control" placeholder="e.g. Subscriptions" required>
+        </div>
+        <div class="form-field" style="display: grid; grid-template-columns: 1fr 2fr; gap: 12px;">
+          <div>
+            <label for="cat-emoji">Emoji Icon</label>
+            <input type="text" id="cat-emoji" class="form-control" placeholder="🍿" maxlength="2" required>
+          </div>
+          <div>
+            <label for="cat-color">Color Theme</label>
+            <input type="color" id="cat-color" class="form-control" style="height: 44px; padding: 4px; cursor: pointer;" value="#6366f1">
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="cat-limit">Monthly Budget Target (Optional)</label>
+          <input type="number" id="cat-limit" class="form-control" step="0.01" placeholder="0.00 (Set 0 to disable limit)">
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn-primary">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 3. TRANSACTION MODAL -->
+  <div class="modal-overlay" id="modal-transaction">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-transaction-title">Add Transaction</h2>
+        <button class="modal-close-btn" data-close-modal>✕</button>
+      </div>
+      <form class="modal-form" id="form-transaction">
+        <div class="form-field" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label for="tx-type">Transaction Type</label>
+            <select id="tx-type" class="form-control">
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+              <option value="transfer">Transfer</option>
+            </select>
+          </div>
+          <div>
+            <label for="tx-date">Date</label>
+            <input type="date" id="tx-date" class="form-control" required>
+          </div>
+        </div>
+        <div class="form-field" style="display: grid; grid-template-columns: 2fr 1.2fr; gap: 12px;">
+          <div>
+            <label for="tx-description">Description</label>
+            <input type="text" id="tx-description" class="form-control" placeholder="e.g. Starbuck's Coffee" required>
+          </div>
+          <div>
+            <label for="tx-amount">Amount</label>
+            <input type="number" id="tx-amount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="tx-account">Source / Primary Account</label>
+          <select id="tx-account" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+        
+        <!-- Toggle-able transfer target -->
+        <div class="form-field" id="tx-to-account-group" style="display: none;">
+          <label for="tx-to-account">Destination / Transfer Account</label>
+          <select id="tx-to-account" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+
+        <!-- Category field -->
+        <div class="form-field" id="tx-category-group">
+          <label for="tx-category">Category</label>
+          <select id="tx-category" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn-primary">Save Transaction</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. RECURRING TRANSACTION MODAL -->
+  <div class="modal-overlay" id="modal-recurring">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modal-recurring-title">Add Recurring Rule</h2>
+        <button class="modal-close-btn" data-close-modal>✕</button>
+      </div>
+      <form class="modal-form" id="form-recurring">
+        <div class="form-field" style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 12px;">
+          <div>
+            <label for="rec-description">Description</label>
+            <input type="text" id="rec-description" class="form-control" placeholder="e.g. Netflix Subscription" required>
+          </div>
+          <div>
+            <label for="rec-amount">Amount</label>
+            <input type="number" id="rec-amount" class="form-control" step="0.01" min="0.01" placeholder="0.00" required>
+          </div>
+        </div>
+        <div class="form-field" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+          <div>
+            <label for="rec-type">Type</label>
+            <select id="rec-type" class="form-control">
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+              <option value="transfer">Transfer</option>
+            </select>
+          </div>
+          <div>
+            <label for="rec-frequency">Frequency</label>
+            <select id="rec-frequency" class="form-control">
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly" selected>Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-field">
+          <label for="rec-account">Source / Primary Account</label>
+          <select id="rec-account" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+        
+        <!-- Toggle-able recurring transfer target -->
+        <div class="form-field" id="rec-to-account-group" style="display: none;">
+          <label for="rec-to-account">Destination / Transfer Account</label>
+          <select id="rec-to-account" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+
+        <!-- Category field -->
+        <div class="form-field" id="rec-category-group">
+          <label for="rec-category">Category</label>
+          <select id="rec-category" class="form-control">
+            <!-- Options dynamically loaded -->
+          </select>
+        </div>
+
+        <div class="form-field">
+          <label for="rec-next-date">First / Next Execution Date</label>
+          <input type="date" id="rec-next-date" class="form-control" required>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" data-close-modal>Cancel</button>
+          <button type="submit" class="btn-primary">Save Rule</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Application Bootstrap Entrypoint -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
